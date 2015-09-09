@@ -11,6 +11,7 @@ public class ServerRoute extends RouteBuilder{
     public void configure() throws Exception {
         from("activemq:queue:test.queue")
                 .log("nieco")
+                .to("bean:messanger")
                 .to("bean:componentImpl");
     }
 }

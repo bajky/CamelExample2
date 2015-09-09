@@ -11,13 +11,13 @@
        http://camel.apache.org/schema/spring
        http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <context:component-scan base-package="server.routes"/>
+    <context:component-scan base-package="server"/>
     <camel:camelContext>
-        <camel:jmxAgent id="agent" disabled="true"/>
+        <camel:jmxAgent id="agent" disabled="false"/>
         <camel:routeBuilder ref="serverRoute"/>
     </camel:camelContext>
 
-    <bean id="componentImpl" class="server.ComponentImpl"/>
+    <!--<bean id="componentImpl" class="server.MessageWrapperr"/>-->
 
     <bean id="jmsConnectionFactory"
           class="org.apache.activemq.ActiveMQConnectionFactory">
