@@ -1,0 +1,23 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <import resource="spring/camel-context.xml"/>
+
+    <camelContext id="context" xmlns="http://camel.apache.org/schema/spring">
+        <camel:routeBuilder ref="serverRoute"/>
+
+        <!--<route>-->
+            <!--<from uri="activemq:queue:test.queue"/>-->
+            <!--<to uri="mock:messanger"/>-->
+        <!--</route>-->
+    </camelContext>
+
+</beans>
