@@ -10,13 +10,18 @@ import server.Messanger;
 public class ServerRoute extends RouteBuilder {
 
     public static final String ENDPOINT_TEST_QUEUE = "jms:queue:test.queue";
+    public static final String ENDPOINT_FOR_DLQ = "jms:queue:dead";
 
     @Override
     public void configure() throws Exception {//define route
+        onException(Exception.class)
+                .handled(true)
+                .log(LoggingLevel.WARN, "Exception was invoke. Pleas fix it")
+                .to(ENDPOINT_FOR_DLQ);
+
         from(ENDPOINT_TEST_QUEUE)
                 .log(LoggingLevel.DEBUG, ServerRoute.class.getSimpleName(), "message arrived in the route - Body = ${bodyAs(String)}")
                 .bean(Messanger.class)
-                .to("bean:messageWrapper")
                 .log(LoggingLevel.DEBUG, ServerRoute.class.getSimpleName(), "message transformed to - Body = ${body}")
                 .end();
     }

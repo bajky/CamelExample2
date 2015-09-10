@@ -12,8 +12,10 @@
        http://camel.apache.org/schema/spring/camel-spring.xsd">
 
     <context:component-scan base-package="server"/>
+
     <camel:camelContext id="context">
         <camel:jmxAgent id="agent" disabled="false"/>
+
         <camel:routeBuilder ref="serverRoute"/>
     </camel:camelContext>
 
@@ -21,13 +23,13 @@
 
     <bean id="jmsConnectionFactory"
           class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://0.0.0.0:61616" />
+        <property name="brokerURL" value="tcp://0.0.0.0:61616"/>
     </bean>
 
     <bean id="pooledConnectionFactory"
           class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
-        <property name="maxConnections" value="8" />
-        <property name="connectionFactory" ref="jmsConnectionFactory" />
+        <property name="maxConnections" value="8"/>
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
     </bean>
 
     <bean id="jmsConfig"
@@ -40,5 +42,6 @@
           class="org.apache.activemq.camel.component.ActiveMQComponent">
         <property name="configuration" ref="jmsConfig"/>
     </bean>
+
 
 </beans>

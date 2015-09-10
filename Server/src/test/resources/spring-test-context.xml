@@ -11,13 +11,16 @@
 
     <import resource="spring/camel-context.xml"/>
 
-    <camelContext id="context" xmlns="http://camel.apache.org/schema/spring">
+    <camel:camelContext id="context" xmlns="http://camel.apache.org/schema/spring">
         <camel:routeBuilder ref="serverRoute"/>
-
-        <!--<route>-->
-            <!--<from uri="activemq:queue:test.queue"/>-->
-            <!--<to uri="mock:messanger"/>-->
-        <!--</route>-->
-    </camelContext>
+        <route>
+            <from uri="jms:queue:test.queue"/>
+            <to uri="mock:messenger"/>
+        </route>
+        <route>
+            <from uri="jms:dead"/>
+            <to uri="mock:dlq"/>
+        </route>
+    </camel:camelContext>
 
 </beans>

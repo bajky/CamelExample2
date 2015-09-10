@@ -67,7 +67,6 @@
     </dependencies>
 
     <modules>
-        <module>Client</module>
         <module>Server</module>
     </modules>
 </project>

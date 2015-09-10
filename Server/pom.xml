@@ -11,7 +11,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>EXAMPLE::SERVER</name>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -45,6 +44,18 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-testng</artifactId>
             <version>${camel-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class Messanger implements Component {
     public String saySomething(String message) {
+
         return "Messanger say: " + message;
     }
 }
