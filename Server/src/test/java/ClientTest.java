@@ -32,12 +32,14 @@ public class ClientTest {
     @Test
     public void messageResponseTest() throws Exception {
 
-        mockMassenger.setExpectedCount(1);
+//        mockMassenger.setExpectedCount(1);
+        mockDlqEndpoint.setExpectedCount(1);
 
         producerTemplate.sendBody(REQUEST);
+//        mockDlqEndpoint.assertIsSatisfied();
 
-        TimeUnit.SECONDS.sleep(1);
-        mockMassenger.assertIsSatisfied();
+//        TimeUnit.SECONDS.sleep(4);
+        mockDlqEndpoint.assertIsSatisfied();
 
     }
 }

@@ -18,7 +18,7 @@
             <to uri="mock:messenger"/>
         </route>
         <route>
-            <from uri="jms:dead"/>
+            <from uri="jms:queue:dead"/>
             <to uri="mock:dlq"/>
         </route>
     </camel:camelContext>

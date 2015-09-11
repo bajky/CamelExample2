@@ -13,6 +13,10 @@
 
     <context:component-scan base-package="server"/>
 
+    <!--<camel:errorHandler id = "simpleHandler" deadLetterHandleNewException="">-->
+
+    <!--</camel:errorHandler>-->
+
     <camel:camelContext id="context">
         <camel:jmxAgent id="agent" disabled="false"/>
 
