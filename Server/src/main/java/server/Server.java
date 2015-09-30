@@ -4,10 +4,13 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.spring.SpringCamelContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Bajky on 8.9.2015.
  */
+
+@Component
 public class Server {
 
     public static void main(String[] args) {

@@ -1,45 +1,71 @@
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import server.Messanger;
 import server.routes.ServerRoute;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author David david.bajko@senacor.com
  */
 
-@RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-test-context.xml")
-public class ClientTest {
+public class ClientTest extends CamelTestSupport {
 
     private static final String REQUEST = "test message";
 
-    @Produce(uri = ServerRoute.ENDPOINT_TEST_QUEUE)
-    ProducerTemplate producerTemplate;
+    private static final String DIRECT_ROUTE = "direct:route";
 
-    @EndpointInject(uri ="mock:dlq")
-    MockEndpoint mockDlqEndpoint;
+
+    @Mock
+    Messanger messanger;
+
+    @InjectMocks
+    ServerRoute serverRoute = new ServerRoute();
+
+    @Produce(uri = DIRECT_ROUTE)
+    private ProducerTemplate producerTemplate;
+
+    @EndpointInject(uri = "mock:dlq")
+    private MockEndpoint mockDlqEndpoint;
 
     @EndpointInject(uri = "mock:messenger")
-    MockEndpoint mockMassenger;
+    private MockEndpoint mockMassenger;
+
+    private void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void messageResponseTest() throws Exception {
+        context.getRouteDefinitions().get(0).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                interceptSendToEndpoint(ServerRoute.ENDPOINT_FOR_DLQ)
+                        .skipSendToOriginalEndpoint()
+                        .to("mock:dlq");
+            }
+        });
 
-//        mockMassenger.setExpectedCount(1);
+
         mockDlqEndpoint.setExpectedCount(1);
 
         producerTemplate.sendBody(REQUEST);
-//        mockDlqEndpoint.assertIsSatisfied();
 
-//        TimeUnit.SECONDS.sleep(4);
         mockDlqEndpoint.assertIsSatisfied();
 
+    }
+
+    @Override
+    protected RouteBuilder createRouteBuilder() throws Exception {
+        setup();
+        replaceRouteFromWith(ServerRoute.ENDPOINT_TEST_QUEUE_ID, DIRECT_ROUTE);
+        return new ServerRoute();
     }
 }
