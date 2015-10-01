@@ -8,6 +8,9 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MessageCounterTest {
 
+//    <plugins>
+//    <statisticsBrokerPlugin/>
+//    </plugins>
     private static final String ACTIVEMQ_URL = "tcp://localhost:61616";
     @Test
     public void getMessageCountOnQueue() {
@@ -21,9 +24,9 @@ public class MessageCounterTest {
     }
 
     @Test
-    public void getCountOfDequeuedMsgTest(){
+    public void getCountOfDequeuedMsgTest() throws Exception{
         MessageBrowser browser = new MessageBrowser(ACTIVEMQ_URL);
-        browser.getCountOfDequeuedMsg("dead");
+        browser.getCountOfDequeuedMsg("test.queue");
     }
 
 }

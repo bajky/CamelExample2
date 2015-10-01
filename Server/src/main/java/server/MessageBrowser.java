@@ -5,7 +5,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQQueueBrowser;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.log4j.Logger;
-
 import javax.jms.*;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -112,16 +111,15 @@ public class MessageBrowser {
             Queue replyTo = session.createTemporaryQueue();
             MessageConsumer consumer = session.createConsumer(replyTo);
 
-            Queue queue = getQueueByname("test.queue");
+//            Queue queue = getQueueByname("test.queue");
             MessageProducer producer = session.createProducer(null);
 
-            String queueName = "ActiveMQ.Statistics.Destination." + queue.getQueueName();
+            String queueName = "ActiveMQ.Statistics.Destination." + name;
             Queue query = session.createQueue(queueName);
 
             Message message = session.createMessage();
 
 
-            producer.send(queue, message);
             message.setJMSReplyTo(replyTo);
             producer.send(query, message);
 
