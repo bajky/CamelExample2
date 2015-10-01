@@ -1,8 +1,6 @@
 import org.junit.Test;
 import server.MessageBrowser;
 
-import java.util.List;
-
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -10,17 +8,22 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MessageCounterTest {
 
+    private static final String ACTIVEMQ_URL = "tcp://localhost:61616";
     @Test
-    public void getMessageCountOnQueue(){
-        MessageBrowser messageCounter = new MessageBrowser("tcp://localhost:61616");
+    public void getMessageCountOnQueue() {
+        MessageBrowser messageCounter = new MessageBrowser(ACTIVEMQ_URL);
 
-        List<Integer> list = messageCounter.getMessageCountOnQueue();
-        assertNotNull(list);
+        Integer size = messageCounter.getMessageCountOnQueue("xxx");
+        assertNotNull(size);
 
-        for(Integer queueSize : list){
-            System.err.println(queueSize);
-        }
+        System.err.println(size);
 
+    }
+
+    @Test
+    public void getCountOfDequeuedMsgTest(){
+        MessageBrowser browser = new MessageBrowser(ACTIVEMQ_URL);
+        browser.getCountOfDequeuedMsg("dead");
     }
 
 }
