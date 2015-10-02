@@ -5,6 +5,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQQueueBrowser;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.log4j.Logger;
+
 import javax.jms.*;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -70,6 +71,7 @@ public class MessageBrowser {
             Iterator<ActiveMQQueue> queueIterator = queues.iterator();
 
             ActiveMQQueue activeMQQueue = null;
+
             while (queueIterator.hasNext()) {
 
                 activeMQQueue = queueIterator.next(); // get next activeMQ queue
@@ -105,42 +107,46 @@ public class MessageBrowser {
         activeMQConnection.close();
     }
 
-    public void getCountOfDequeuedMsg(String name) {
+    public Integer getCountOfDequeuedMsg(String name) {
 
         try {
-            Queue replyTo = session.createTemporaryQueue();
-            MessageConsumer consumer = session.createConsumer(replyTo);
-
-//            Queue queue = getQueueByname("test.queue");
-            MessageProducer producer = session.createProducer(null);
-
             String queueName = "ActiveMQ.Statistics.Destination." + name;
+
+            Queue replyTo = session.createTemporaryQueue();
             Queue query = session.createQueue(queueName);
 
+            MessageConsumer consumer = session.createConsumer(replyTo);
+            MessageProducer producer = session.createProducer(null);
+
             Message message = session.createMessage();
-
-
             message.setJMSReplyTo(replyTo);
             producer.send(query, message);
 
-            MapMessage reply = (MapMessage) consumer.receive();
+            MapMessage reply = (MapMessage) consumer.receive(1000);
 
             if (reply != null && reply.getMapNames().hasMoreElements()) {
 
-                for (Enumeration e = reply.getMapNames(); e.hasMoreElements(); ) {
-                    String stringName = e.nextElement().toString();
-                    System.err.println(stringName + "=" + reply.getObject(stringName));
-                }
+                return Integer.valueOf(reply.getObject("dequeueCount").toString());
 
             }else{
                 logger.debug("Null in getCountOfDequeuedMsg");
+
             }
-
-
         } catch (JMSException e) {
             e.printStackTrace();
         }
 
+        return null;
+    }
+
+    public void messageListener(String queueName) throws JMSException {
+
+        session.setMessageListener(new MessageListener() {
+            public void onMessage(Message message) {
+                System.err.println(message);
+            }
+        });
+        System.err.println(session.getMessageListener());
     }
 
 

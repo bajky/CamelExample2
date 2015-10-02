@@ -1,6 +1,9 @@
 import org.junit.Test;
 import server.MessageBrowser;
 
+import javax.jms.JMSException;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -26,7 +29,14 @@ public class MessageCounterTest {
     @Test
     public void getCountOfDequeuedMsgTest() throws Exception{
         MessageBrowser browser = new MessageBrowser(ACTIVEMQ_URL);
-        browser.getCountOfDequeuedMsg("test.queue");
+        int countOfDequeuedMsg = browser.getCountOfDequeuedMsg("test.queue");
+
+        assertEquals(0, countOfDequeuedMsg);
+    }
+    @Test
+    public void messageListenerTest() throws JMSException {
+        MessageBrowser browser = new MessageBrowser(ACTIVEMQ_URL);
+        browser.messageListener("aaaaa");
     }
 
 }

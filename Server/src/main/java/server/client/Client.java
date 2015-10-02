@@ -16,6 +16,10 @@ import javax.jms.ConnectionFactory;
  */
 public class Client {
 
+    public Client(){
+
+    }
+
     public static void main(String[] args) {
         ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/camel-context.xml");
         try {
@@ -31,7 +35,6 @@ public class Client {
 
             connection.stop();
             camelContext.stop();
-
             System.exit(0);
 
         } catch (Exception e) {

@@ -21,6 +21,7 @@
         <camel:jmxAgent id="agent" disabled="false"/>
 
         <camel:routeBuilder ref="serverRoute"/>
+
     </camel:camelContext>
 
     <!--<bean id="componentImpl" class="server.MessageWrapperr"/>-->
