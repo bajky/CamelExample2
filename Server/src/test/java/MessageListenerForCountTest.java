@@ -1,4 +1,6 @@
+import org.junit.Before;
 import org.junit.Test;
+import server.client.Client;
 import server.counter.MessageListenerForCount;
 
 /**
@@ -6,10 +8,16 @@ import server.counter.MessageListenerForCount;
  */
 public class MessageListenerForCountTest {
 
+    @Before
+    public void setup(){
+        MessageListenerForCount messageListenerForCount = new MessageListenerForCount( "dead", "tcp://localhost:61616");
+        messageListenerForCount.startCountOn();
+        Client.main(null);
+    }
+
     @Test
-    public void incommingMesasgesCountTest(){
-        MessageListenerForCount messageListenerForCount = new MessageListenerForCount("dead");
-        messageListenerForCount.startCountOn("tcp://localhost:61616");
+    public void incommingMesasgesCountTest() throws InterruptedException {
+
 
     }
 }

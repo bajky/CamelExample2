@@ -31,7 +31,7 @@ public class Client {
             camelContext.start();
 
             ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
-            producerTemplate.sendBody(ServerRoute.ENDPOINT_TEST_QUEUE, "hello World");
+            producerTemplate.sendBody(ServerRoute.ENDPOINT_TEST_QUEUE, "heldlo Worlds");
 
             connection.stop();
             camelContext.stop();

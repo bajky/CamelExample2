@@ -19,9 +19,8 @@ public class MessageCounterTest {
     public void getMessageCountOnQueue() {
         MessageBrowser messageCounter = new MessageBrowser(ACTIVEMQ_URL);
 
-        Integer size = messageCounter.getMessageCountOnQueue("xxx");
+        Integer size = messageCounter.getMessageCountOnQueue("dead");
         assertNotNull(size);
-
         System.err.println(size);
 
     }

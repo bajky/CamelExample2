@@ -84,9 +84,12 @@ public class MessageBrowser {
             }
             System.out.println(activeMQConnection.getBrokerInfo());
 
-            ActiveMQQueueBrowser queueBrowser = (ActiveMQQueueBrowser) session.createBrowser(activeMQQueue);//create queueBrowser
+            ActiveMQQueueBrowser queueBrowser = (ActiveMQQueueBrowser) session.createBrowser(activeMQQueue, "JMSMessageID = 'ID:RELLU-LT430S-54511-1444119423663-1:2:5:1:1'");//create queueBrowser
 
             Enumeration enumeration = queueBrowser.getEnumeration();
+            while(enumeration.hasMoreElements()){
+                System.err.println(enumeration.nextElement().toString());
+            }
             int size = Collections.list(enumeration).size();
             closeSessison();
 
