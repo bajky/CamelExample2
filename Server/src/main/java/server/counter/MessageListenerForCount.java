@@ -18,33 +18,25 @@ import java.util.Set;
  */
 public class MessageListenerForCount {
     private static int ackMode = Session.CLIENT_ACKNOWLEDGE;
-
+    ActiveMQMessageConsumer acctiveMQConsumer;
     private final String activeMQurl;
     private static boolean TRANSACTED = false;
 
     private Session session;
     private ActiveMQConnection connection;
-    private MessageProducer messageProducer;
     private Logger logger = Logger.getLogger(MessageListenerForCount.class);
     private String queueName;
-    private MessageListener messageListener;
-    private ActiveMQQueue activeMQQueue;
-    private String corelationID = null;
 
-
-
-    public MessageListenerForCount(String queueName, String activeMQurl) {
+    public MessageListenerForCount(String activeMQurl, String queueName) {
         this.activeMQurl = activeMQurl;
         this.queueName = queueName;
-        this.messageListener = new MessageCounter();
-
+        createConnection();
+        setMessageListener();
     }
 
-
-    public void startCountOn() {
-
-
+    private void createConnection() {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(activeMQurl);
+
 
         try {
 
@@ -52,19 +44,14 @@ public class MessageListenerForCount {
             connection.start(); // starting connection
 
             session = connection.createSession(TRANSACTED, ackMode); //creating session
-            ActiveMQQueue queue = getQueueByname(queueName);
 
-            activeMQQueue = (ActiveMQQueue) session.createQueue("responseQueue");
-
-
-            ActiveMQMessageConsumer consumer = (ActiveMQMessageConsumer) session.createConsumer(queue);
-            consumer.setMessageListener(messageListener);
         } catch (JMSException e) {
             logger.debug("Error in " + this.getClass().getName() + " at starting");
             e.printStackTrace();
         }
     }
 
+    // return queue by string name
     private ActiveMQQueue getQueueByname(String name) {
 
         ActiveMQQueue activeMQQueue = null;
@@ -85,42 +72,69 @@ public class MessageListenerForCount {
         return null;
     }
 
-
-
-    public void stopCount() {
+    //close connection and session
+    public void closeConnection() {
         try {
             session.close();
             connection.stop();
+            System.exit(0);
         } catch (JMSException e) {
             logger.debug("exception in " + this.getClass().getName());
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) {
-        MessageListenerForCount messageListenerForCount = new MessageListenerForCount("dead","tcp://localhost:61616");
-        messageListenerForCount.startCountOn();
-        while(true){
+
+    //if message is not on another que, is On last queue
+    public boolean isMessageOnAnotherQueue(String messageID, String... queues) {
+        for (String queue : queues) {
+            if (isMessageOnQueue(queue, messageID)) {
+                return true;
+            }
+        }
+        return true;
+    }
+
+    //set Listener of the consumer
+    private void setMessageListener() {
+        try {
+            ActiveMQQueue activeMQQueue =  getQueueByname(queueName);
+
+            acctiveMQConsumer = (ActiveMQMessageConsumer) session.createConsumer(activeMQQueue);
+            acctiveMQConsumer.setMessageListener(new MessageReceiver());
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //find message with specific MessageID
+    public boolean isMessageOnQueue(String queueName, String messageID) {
+        ActiveMQQueue activeMQQueue = getQueueByname(queueName);
+
+        try {
+            ActiveMQQueueBrowser browser = (ActiveMQQueueBrowser) session.createBrowser(activeMQQueue, "JMSMessageID = 'ID:Davidko-50786-1443708845697-1:2:7:1:1'");
+            Enumeration enumeration = browser.getEnumeration();
+
+            return (Collections.list(enumeration).size() > 0);
+
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //listener for messages
+    private class MessageReceiver implements MessageListener {
+
+        public void onMessage(Message message) {
+            String messageID = null;
+
+
 
         }
     }
 
-   private class MessageCounter implements MessageListener{
-
-       public void onMessage(Message message) {
-
-           try {
-               messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-               messageProducer = session.createProducer(null);
-               messageProducer.send(activeMQQueue,message);
-               corelationID = message.getJMSCorrelationID();
-
-               System.out.println(corelationID);
-           } catch (JMSException e) {
-               e.printStackTrace();
-           }
-       }
-   }
+    //return count of messages on specific Queue
     public Integer getMessageCountOnQueue(String name) {
 
         try {
@@ -146,9 +160,6 @@ public class MessageListenerForCount {
             Enumeration enumeration = queueBrowser.getEnumeration();
             int size = Collections.list(enumeration).size();
 
-            System.err.println(enumeration.nextElement().toString());
-            closeSession();
-
             return size;
 
         } catch (JMSException e) {
@@ -160,16 +171,6 @@ public class MessageListenerForCount {
 
         return null;
     }
-
-    private void closeSession(){
-        try {
-            session.close();
-            connection.close();
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-    }
-
 
 
 }

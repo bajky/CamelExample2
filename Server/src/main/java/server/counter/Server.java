@@ -18,6 +18,7 @@ public class Server implements MessageListener{
     private MessageProducer replyProducer;
     private MessageProtocol messageProtocol;
 
+
     static {
         messageBrokerUrl = "tcp://localhost:61616";
         messageQueueName = "client.messages";
@@ -26,12 +27,7 @@ public class Server implements MessageListener{
 
     public Server() {
         try {
-            //This message broker is embedded
-            BrokerService broker = new BrokerService();
-            broker.setPersistent(false);
-            broker.setUseJmx(false);
-            broker.addConnector(messageBrokerUrl);
-            broker.start();
+
         } catch (Exception e) {
             //Handle the exception appropriately
         }
@@ -51,8 +47,7 @@ public class Server implements MessageListener{
             this.session = connection.createSession(this.transacted, ackMode);
             Destination adminQueue = this.session.createQueue(messageQueueName);
 
-            //Setup a message producer to respond to messages from clients, we will get the destination
-            //to send to from the JMSReplyTo header field from a Message
+
             this.replyProducer = this.session.createProducer(null);
             this.replyProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 

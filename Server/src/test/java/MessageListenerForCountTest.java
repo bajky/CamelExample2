@@ -11,8 +11,6 @@ public class MessageListenerForCountTest {
     @Before
     public void setup(){
         MessageListenerForCount messageListenerForCount = new MessageListenerForCount( "dead", "tcp://localhost:61616");
-        messageListenerForCount.startCountOn();
-        Client.main(null);
     }
 
     @Test
