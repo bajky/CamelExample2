@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author David david.bajko@senacor.com
  */
-public class MessageReceiverTest {
+public class IncommingMessagesListenerTest {
 
 //    <plugins>
 //    <statisticsBrokerPlugin/>

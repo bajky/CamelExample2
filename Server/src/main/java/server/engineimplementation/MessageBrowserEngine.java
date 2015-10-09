@@ -1,11 +1,12 @@
-package server.counter;
+package server.engineimplementation;
 
 import org.apache.activemq.ActiveMQQueueBrowser;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.log4j.Logger;
 
 import javax.jms.JMSException;
-import javax.jms.Session;
+import javax.jms.Message;
+import javax.jms.TextMessage;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -16,8 +17,6 @@ import java.util.Set;
  */
 public class MessageBrowserEngine extends ConnectableComponent {
 
-    private static final int ACKNOWLEDGE_MODE = Session.CLIENT_ACKNOWLEDGE;
-    private static final boolean TRANSACTIONAL = false;
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -52,7 +51,7 @@ public class MessageBrowserEngine extends ConnectableComponent {
     }
 
     //find queue by name
-    public ActiveMQQueue getQueueByname(String queueName) {
+    ActiveMQQueue getQueueByname(String queueName) {
 
         ActiveMQQueue activeMQQueue = null;
         try {
@@ -71,6 +70,7 @@ public class MessageBrowserEngine extends ConnectableComponent {
         }
         return null;
     }
+
 
     //return count of messages on specific Queue
     public Integer getMessageCountOnQueue(String queueName) {
@@ -104,6 +104,27 @@ public class MessageBrowserEngine extends ConnectableComponent {
             activeMQNullException.printStackTrace();
         }
 
+        return null;
+    }
+
+
+    public Message getMessageByText(Set<Message> messages, String text) {
+        Iterator<Message> iterator = messages.iterator();
+
+        while (iterator.hasNext()) {
+            Message nextMessage = iterator.next();
+            try {
+                if (nextMessage instanceof TextMessage) {
+                    boolean equals = ((TextMessage) nextMessage).getText().equals(text);
+                    if(equals){
+                        System.err.println(nextMessage);
+                        return nextMessage;
+                    }
+                }
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 }

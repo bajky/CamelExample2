@@ -1,7 +1,6 @@
 import org.junit.Before;
 import org.junit.Test;
-import server.client.Client;
-import server.counter.MessageListenerForCount;
+import server.engineimplementation.MessageListenerForCount;
 
 /**
  * @author David david.bajko@senacor.com

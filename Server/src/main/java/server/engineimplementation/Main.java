@@ -1,4 +1,4 @@
-package server.counter;
+package server.engineimplementation;
 
 import org.apache.log4j.Logger;
 
@@ -12,7 +12,9 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         MessageCounterImplementation messageCounterImplementation = new MessageCounterImplementation(ACTIVEMQ_URL, QUEUE);
-        boolean lastIncMessDeQ = messageCounterImplementation.isLastIncMessDeQ(200);
-        logger.debug(lastIncMessDeQ);
+        server.client.Client.sendMessage(null);
+
+        boolean wasDequeued = messageCounterImplementation.messageWasDequeued("test.queue", "dead", "heldlo Worlds");
+        logger.debug(wasDequeued + "asdassssssssssssssssssssssssssdasd");
     }
 }

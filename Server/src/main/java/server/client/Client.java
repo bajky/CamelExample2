@@ -20,7 +20,7 @@ public class Client {
 
     }
 
-    public static void main(String[] args) {
+    public static void sendMessage(String[] args) {
         ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/camel-context.xml");
         try {
             ConnectionFactory connFact = new ActiveMQConnectionFactory("tcp://0.0.0.0:61616");

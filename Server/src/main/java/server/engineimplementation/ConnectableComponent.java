@@ -1,4 +1,4 @@
-package server.counter;
+package server.engineimplementation;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -12,7 +12,7 @@ import javax.jms.Session;
  * @author David david.bajko@senacor.com
  */
 public abstract class ConnectableComponent {
-    private static final int ACKNOWLEDGE_MODE = Session.CLIENT_ACKNOWLEDGE;
+    private static final int ACKNOWLEDGE_MODE = Session.AUTO_ACKNOWLEDGE;
     private static final boolean TRANSACTIONAL = false;
 
     private final Logger logger = Logger.getLogger(this.getClass());

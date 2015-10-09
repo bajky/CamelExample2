@@ -16,7 +16,6 @@ public class Server implements MessageListener{
     private Session session;
     private boolean transacted = false;
     private MessageProducer replyProducer;
-    private MessageProtocol messageProtocol;
 
 
     static {
@@ -34,7 +33,6 @@ public class Server implements MessageListener{
 
         //Delegating the handling of messages to another class, instantiate it before setting up JMS so it
         //is ready to handle messages
-        this.messageProtocol = new MessageProtocol();
         this.setupMessageQueueConsumer();
     }
 
@@ -65,7 +63,6 @@ public class Server implements MessageListener{
             if (message instanceof TextMessage) {
                 TextMessage txtMsg = (TextMessage) message;
                 String messageText = txtMsg.getText();
-                response.setText(this.messageProtocol.handleProtocolMessage(messageText));
             }
 
             //Set the correlation ID from the received message to be the correlation id of the response message
