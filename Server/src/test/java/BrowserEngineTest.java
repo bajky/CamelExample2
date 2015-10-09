@@ -1,12 +1,7 @@
-import org.apache.activemq.*;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import server.engineimplementation.MessageCounterImplementation;
-
-import javax.jms.*;
-import javax.jms.Message;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,14 +11,7 @@ import static org.junit.Assert.assertTrue;
  * @author David david.bajko@senacor.com
  */
 public class BrowserEngineTest {
-    private static final String MESSAGE_BROKER_URL = "tcp://localhost:61616";
-
-    private static final String ACRIVEMQ_DLQ = "dlq";
-    private static final String ACRIVEMQ_TEST_QUEUE = "test";
-
-    private ActiveMQConnection activeMQConnection;
-    private ActiveMQSession activeMQSession;
-    private ActiveMQQueueBrowser activeMQQueueBrowser;
+    public static final String MESSAGE_BROKER_URL = "tcp://localhost:61616?jms.useAsyncSend=true&jms.dispatchAsync=true&wireFormat.maxInactivityDuration=-1";
 
     private static Server server;
 
@@ -37,41 +25,6 @@ public class BrowserEngineTest {
         server.stopConnection();
     }
 
-    private void setupConnection() throws JMSException {
-        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(MESSAGE_BROKER_URL);
-
-        activeMQConnection = (ActiveMQConnection) activeMQConnectionFactory.createConnection();
-        activeMQConnection.start();
-        activeMQSession = (ActiveMQSession) activeMQConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-        MessageProducer producer = activeMQSession.createProducer(null);
-
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-        ActiveMQQueue activeMQQueue = (ActiveMQQueue) activeMQSession.createQueue("test.queue");
-        ActiveMQQueue activeMQDLQ = (ActiveMQQueue) activeMQSession.createQueue("dlq");
-    }
-
-    private void createServer() throws JMSException {
-        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(MESSAGE_BROKER_URL);
-
-        Connection connection = activeMQConnectionFactory.createConnection();
-        connection.start();
-        ActiveMQSession session = (ActiveMQSession) connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-        ActiveMQQueue testQueue = (ActiveMQQueue) session.createQueue(ACRIVEMQ_TEST_QUEUE);
-        ActiveMQQueue dlqQueue = (ActiveMQQueue) session.createQueue(ACRIVEMQ_DLQ);
-
-        ActiveMQMessageProducer messageProducer = (ActiveMQMessageProducer) session.createProducer(null);
-        ActiveMQMessageConsumer consumer = (ActiveMQMessageConsumer) session.createConsumer(testQueue);
-
-        consumer.setMessageListener(new MessageListener() {
-            public void onMessage(Message message) {
-
-            }
-        });
-
-
-    }
 
 
     @Test
@@ -83,13 +36,15 @@ public class BrowserEngineTest {
         boolean b = messageCounterImplementation.messageWasDequeued(Server.CLIENT_QUEUE_NAME, Server.DLQ, "test message");
         System.err.println(b);
         assertTrue(b);
+        messageCounterImplementation.closeConnections();
+
+        client.stopConnection();
+
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        client.stopConnection();
-
     }
 
 

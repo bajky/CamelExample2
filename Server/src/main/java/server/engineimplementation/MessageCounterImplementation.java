@@ -73,4 +73,10 @@ public class MessageCounterImplementation {
         return null;
     }
 
+    public void closeConnections() {
+        this.messageListenerForCount.closeConnection();
+        this.messageBrowserEngine.closeConnection();
+    }
+
+
 }

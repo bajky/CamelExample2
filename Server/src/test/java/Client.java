@@ -12,7 +12,6 @@ public class Client {
     private static final int ACK_MODE = Session.CLIENT_ACKNOWLEDGE;
     private static final String CLIENT_QUEUE_NAME = "server.receiver";
     private static final String TEST_MESSAGE = "test message";
-    private static final String ACTIVEMQ_URL = "tcp://localhost:61616";
 
     private Logger logger = Logger.getLogger(Client.class);
     private Connection connection;
@@ -44,15 +43,13 @@ public class Client {
     }
 
 
-    public static void main(String[] args) {
-        new Client(ACTIVEMQ_URL);
-    }
-
     public void stopConnection() {
 
         try {
             session.close();
-            connection.stop();
+            connection.close();
+
+
         } catch (JMSException e) {
             e.printStackTrace();
         }

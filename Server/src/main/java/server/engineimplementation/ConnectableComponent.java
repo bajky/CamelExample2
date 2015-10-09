@@ -39,7 +39,7 @@ public abstract class ConnectableComponent {
             jmsException.printStackTrace();
         }
     }
-    protected void closeConnection() {
+    public void closeConnection() {
         try {
             activeMQSession.close();
             activeMQConnection.close();

@@ -52,6 +52,7 @@ public class Server {
             messageProducer = (ActiveMQMessageProducer) session.createProducer(dlqQueue);
             ActiveMQMessageConsumer consumer = (ActiveMQMessageConsumer) session.createConsumer(testQueue);
             consumer.setMessageListener(new MessageListerForServer());
+
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -60,9 +61,11 @@ public class Server {
 
     public void stopConnection() {
         try {
+
             session.close();
             session.dispose();
             connection.stop();
+            connection.close();
             broker.stop();
 
         } catch (JMSException e) {

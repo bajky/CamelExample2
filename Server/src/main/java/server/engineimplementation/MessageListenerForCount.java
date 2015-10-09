@@ -34,10 +34,11 @@ public class MessageListenerForCount extends ConnectableComponent{
 
     //close connection and session
     @Override
-    protected void closeConnection() {
+    public void closeConnection() {//todo nieco s tymto nebude v poriadku
         try {
             super.closeConnection();
             acctiveMQConsumer.close();
+            messageBrowserEngine.closeConnection();
         } catch (JMSException e) {
             logger.debug("exception in " + this.getClass().getName());
             e.printStackTrace();
