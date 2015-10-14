@@ -34,7 +34,7 @@ public class MessageListenerForCount extends ConnectableComponent{
 
     //close connection and session
     @Override
-    public void closeConnection() {//todo nieco s tymto nebude v poriadku
+    public void closeConnection() {
         try {
             super.closeConnection();
             acctiveMQConsumer.close();
@@ -75,6 +75,7 @@ public class MessageListenerForCount extends ConnectableComponent{
         public void onMessage(Message message) {
 
             messageList.add(message);
+            System.err.println("from Listener" + message);
 
         }
     }

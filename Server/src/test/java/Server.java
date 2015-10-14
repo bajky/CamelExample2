@@ -16,9 +16,15 @@ public class Server {
 
     private Connection connection;
     private String acttiveMQURL;
+
+
     private ActiveMQSession session;
     private ActiveMQMessageProducer messageProducer;
     private BrokerService broker;
+    private ActiveMQMessageConsumer consumer;
+
+
+    private String messageID;
 
     public Server(String activeMQURL) {
         this.acttiveMQURL = activeMQURL;
@@ -50,7 +56,7 @@ public class Server {
             ActiveMQQueue dlqQueue = (ActiveMQQueue) session.createQueue(DLQ);
 
             messageProducer = (ActiveMQMessageProducer) session.createProducer(dlqQueue);
-            ActiveMQMessageConsumer consumer = (ActiveMQMessageConsumer) session.createConsumer(testQueue);
+            consumer = (ActiveMQMessageConsumer) session.createConsumer(testQueue, "JMSType = 'error'");
             consumer.setMessageListener(new MessageListerForServer());
 
         } catch (JMSException e) {
@@ -79,12 +85,31 @@ public class Server {
 
         public void onMessage(Message message) {
             try {
-                messageProducer.send(message);
+                System.err.println("posielam do DLQ" + message);
+                messageID = message.getJMSMessageID();
             } catch (JMSException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    public ActiveMQSession getSession() {
+        return session;
+    }
 
+    public String getRecievedMessageID() {
+        return messageID;
+    }
+
+    public void setMessageListener(MessageListener listener) {
+        try {
+            consumer.setMessageListener(listener);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ActiveMQMessageProducer getMessageProducer() {
+        return messageProducer;
+    }
 }

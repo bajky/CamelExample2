@@ -27,22 +27,24 @@ public class MessageBrowserEngine extends ConnectableComponent {
     //detect whether is message on antoher queue
     public boolean isMessageOnAnotherQueue(String messageID, String... queues) {
         for (String queue : queues) {
-            if (isMessageOnQueue(queue, messageID)) {
+            if (isMessageOnQueue(messageID, queue)) {
                 return true;
             }
         }
-        return true;
+        return false;
     }
 
     //detect whether is message on concrete queue
-    public boolean isMessageOnQueue(String queueName, String messageID) {
+    public boolean isMessageOnQueue(String messageID,String queueName) {
         ActiveMQQueue activeMQQueue = getQueueByname(queueName);
 
         try {
-            ActiveMQQueueBrowser browser = (ActiveMQQueueBrowser) getActiveMQSession().createBrowser(activeMQQueue, "JMSMessageID = '" + messageID + "'");
+            ActiveMQQueueBrowser browser = (ActiveMQQueueBrowser) getActiveMQSession().createBrowser(activeMQQueue,"JMSMessageID = '" + messageID + "'");
             Enumeration enumeration = browser.getEnumeration();
 
-            return (Collections.list(enumeration).size() > 0);
+
+            int size = Collections.list(enumeration).size();
+            return (size > 0);
 
         } catch (JMSException e) {
             e.printStackTrace();
@@ -51,7 +53,7 @@ public class MessageBrowserEngine extends ConnectableComponent {
     }
 
     //find queue by name
-    ActiveMQQueue getQueueByname(String queueName) {
+    public ActiveMQQueue getQueueByname(String queueName) {
 
         ActiveMQQueue activeMQQueue = null;
         try {
@@ -61,10 +63,10 @@ public class MessageBrowserEngine extends ConnectableComponent {
             while (queueIterator.hasNext()) {
                 activeMQQueue = queueIterator.next();
                 if (activeMQQueue.getQueueName().equals(queueName)) {
-                    break;
+                    return activeMQQueue;
                 }
             }
-            return activeMQQueue;
+
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -108,6 +110,8 @@ public class MessageBrowserEngine extends ConnectableComponent {
     }
 
 
+
+
     public Message getMessageByText(Set<Message> messages, String text) {
         Iterator<Message> iterator = messages.iterator();
 
@@ -127,4 +131,6 @@ public class MessageBrowserEngine extends ConnectableComponent {
         }
         return null;
     }
+
+
 }

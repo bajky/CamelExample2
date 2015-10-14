@@ -33,8 +33,32 @@ public class MessageCounterImplementation {
             if (resultMessage != null) {
 
                 String messageID = resultMessage.getJMSMessageID();
-                boolean messageOnQueue = messageBrowserEngine.isMessageOnQueue(queueName, messageID);
-                boolean messageOnAnotherQueue = messageBrowserEngine.isMessageOnAnotherQueue(dlqName);
+                boolean messageOnQueue = messageBrowserEngine.isMessageOnQueue(messageID, queueName);
+                boolean messageIsOnDLQ = messageBrowserEngine.isMessageOnQueue(messageID,dlqName);
+
+                if (!messageOnQueue && messageIsOnDLQ) {
+                    logger.debug("message with ID: " + resultMessage.getJMSMessageID() + " was dequeued.");
+                    return true;
+                }
+            }
+
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean messageIsOnDlq(String queueName, String dlqName, String text){
+
+        Set<Message> incommingMessages = messageListenerForCount.getIncommingMessages(2000);
+        Message resultMessage = messageBrowserEngine.getMessageByText(incommingMessages, text);
+
+        try {
+            if (resultMessage != null) {
+
+                String messageID = resultMessage.getJMSMessageID();
+                boolean messageOnQueue = messageBrowserEngine.isMessageOnQueue(messageID, queueName);
+                boolean messageOnAnotherQueue = messageBrowserEngine.isMessageOnAnotherQueue(messageID,dlqName);
 
                 if (!messageOnQueue && messageOnAnotherQueue) {
                     logger.debug("message with ID: " + resultMessage.getJMSMessageID() + " was dequeued.");

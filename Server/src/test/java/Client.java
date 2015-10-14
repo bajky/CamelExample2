@@ -2,6 +2,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQMessageProducer;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.log4j.Logger;
+import server.engineimplementation.MessageBrowserEngine;
 
 import javax.jms.*;
 import java.util.Iterator;
@@ -9,16 +10,17 @@ import java.util.Set;
 
 public class Client {
 
-    private static final int ACK_MODE = Session.CLIENT_ACKNOWLEDGE;
+    private static final int ACK_MODE = Session.AUTO_ACKNOWLEDGE;
     private static final String CLIENT_QUEUE_NAME = "server.receiver";
-    private static final String TEST_MESSAGE = "test message";
 
     private Logger logger = Logger.getLogger(Client.class);
     private Connection connection;
     private Session session;
     private ActiveMQMessageProducer producer;
+    private MessageBrowserEngine messageBrowserEngine;
 
     private boolean transacted = false;
+    private TextMessage message;
 
     public Client(String activeMQUrl) {
 
@@ -28,14 +30,11 @@ public class Client {
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(transacted, ACK_MODE);
+            messageBrowserEngine = new MessageBrowserEngine(activeMQUrl);
+            ActiveMQQueue activeMQQueue = messageBrowserEngine.getQueueByname(Server.CLIENT_QUEUE_NAME);
 
-            ActiveMQQueue producerQueue = (ActiveMQQueue) session.createQueue(CLIENT_QUEUE_NAME);
-            producer = (ActiveMQMessageProducer) session.createProducer(producerQueue);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            producer = (ActiveMQMessageProducer) session.createProducer(activeMQQueue);
 
-            TextMessage txtMessage = session.createTextMessage();
-            txtMessage.setText(TEST_MESSAGE);
-            producer.send(txtMessage);
         } catch (JMSException e) {
             logger.debug("Exception in " + this.getClass().getName());
             e.printStackTrace();
@@ -48,6 +47,7 @@ public class Client {
         try {
             session.close();
             connection.close();
+            messageBrowserEngine.closeConnection();
 
 
         } catch (JMSException e) {
@@ -55,13 +55,14 @@ public class Client {
         }
     }
 
-    public void sendMessage(String messageText) {
+    public void sendMessage(String messageText, String messageType) {
 
         try {
 
-            TextMessage txtMessage = session.createTextMessage();
-            txtMessage.setText(messageText);
-            producer.send(txtMessage);
+            message= session.createTextMessage();
+            message.setText(messageText);
+            message.setJMSType(messageType);
+            producer.send(message);
 
         } catch (JMSException e) {
             e.printStackTrace();
@@ -88,6 +89,14 @@ public class Client {
         } catch (JMSException e) {
             e.printStackTrace();
         }
+    }
+
+    public TextMessage getTextMessage(){
+        if(message instanceof TextMessage){
+            return message;
+        }
+
+        return null;
     }
 
 }
