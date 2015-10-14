@@ -2,7 +2,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQMessageProducer;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.log4j.Logger;
-import server.engineimplementation.MessageBrowserEngine;
+import server.engineimplementation.MessageBrowser;
 
 import javax.jms.*;
 import java.util.Iterator;
@@ -17,7 +17,7 @@ public class Client {
     private Connection connection;
     private Session session;
     private ActiveMQMessageProducer producer;
-    private MessageBrowserEngine messageBrowserEngine;
+    private MessageBrowser messageBrowser;
 
     private boolean transacted = false;
     private TextMessage message;
@@ -30,8 +30,8 @@ public class Client {
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(transacted, ACK_MODE);
-            messageBrowserEngine = new MessageBrowserEngine(activeMQUrl);
-            ActiveMQQueue activeMQQueue = messageBrowserEngine.getQueueByname(Server.CLIENT_QUEUE_NAME);
+            messageBrowser = new MessageBrowser(activeMQUrl);
+            ActiveMQQueue activeMQQueue = messageBrowser.getQueueByname(Server.CLIENT_QUEUE_NAME);
 
             producer = (ActiveMQMessageProducer) session.createProducer(activeMQQueue);
 
@@ -47,7 +47,7 @@ public class Client {
         try {
             session.close();
             connection.close();
-            messageBrowserEngine.closeConnection();
+            messageBrowser.closeConnection();
 
 
         } catch (JMSException e) {

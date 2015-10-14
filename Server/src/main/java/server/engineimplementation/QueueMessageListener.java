@@ -13,20 +13,20 @@ import java.util.Set;
 /**
  * @author David david.bajko@senacor.com
  */
-public class MessageListenerForCount extends ConnectableComponent{
+public class QueueMessageListener extends ConnectableComponent{
 
-    private final Logger logger = Logger.getLogger(MessageListenerForCount.class);
+    private final Logger logger = Logger.getLogger(QueueMessageListener.class);
     private final String queueName;
 
     private ActiveMQMessageConsumer acctiveMQConsumer;
 
-    protected MessageBrowserEngine messageBrowserEngine;
+    protected MessageBrowser messageBrowser;
 
     private Set<Message> messageList;
 
-    public MessageListenerForCount(String activeMQurl, String queueName) {
+    public QueueMessageListener(String activeMQurl, String queueName) {
         super(activeMQurl);
-        this.messageBrowserEngine = new MessageBrowserEngine(activeMQurl);
+        this.messageBrowser = new MessageBrowser(activeMQurl);
         this.queueName = queueName;
         this.messageList = new HashSet<Message>();
         setMessageListener();
@@ -38,7 +38,7 @@ public class MessageListenerForCount extends ConnectableComponent{
         try {
             super.closeConnection();
             acctiveMQConsumer.close();
-            messageBrowserEngine.closeConnection();
+            messageBrowser.closeConnection();
         } catch (JMSException e) {
             logger.debug("exception in " + this.getClass().getName());
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class MessageListenerForCount extends ConnectableComponent{
     //set Listener of the consumer
     private void setMessageListener() {
         try {
-            ActiveMQQueue activeMQQueue = messageBrowserEngine.getQueueByname(queueName);
+            ActiveMQQueue activeMQQueue = messageBrowser.getQueueByname(queueName);
 
             acctiveMQConsumer = (ActiveMQMessageConsumer) getActiveMQSession().createConsumer(activeMQQueue);
             acctiveMQConsumer.setMessageListener(new IncommingMessagesListener());
@@ -80,8 +80,8 @@ public class MessageListenerForCount extends ConnectableComponent{
         }
     }
 
-    public MessageBrowserEngine getMessageBrowserEngine() {
-        return this.messageBrowserEngine;
+    public MessageBrowser getMessageBrowser() {
+        return this.messageBrowser;
     }
 
 

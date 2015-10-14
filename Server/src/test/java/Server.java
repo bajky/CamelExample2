@@ -16,18 +16,19 @@ public class Server {
 
     private Connection connection;
     private String acttiveMQURL;
+    private String messageType;
 
 
     private ActiveMQSession session;
     private ActiveMQMessageProducer messageProducer;
     private BrokerService broker;
     private ActiveMQMessageConsumer consumer;
-
-
     private String messageID;
 
-    public Server(String activeMQURL) {
+
+    public Server(String activeMQURL, String messageType) {
         this.acttiveMQURL = activeMQURL;
+        this.messageType = messageType;
 
         broker = new BrokerService();
         broker.setPersistent(false);
@@ -50,13 +51,14 @@ public class Server {
             connection = activeMQConnectionFactory.createConnection();
             connection.start();
 
-            session = (ActiveMQSession) connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            session = (ActiveMQSession) connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
             ActiveMQQueue testQueue = (ActiveMQQueue) session.createQueue(CLIENT_QUEUE_NAME);
             ActiveMQQueue dlqQueue = (ActiveMQQueue) session.createQueue(DLQ);
 
             messageProducer = (ActiveMQMessageProducer) session.createProducer(dlqQueue);
-            consumer = (ActiveMQMessageConsumer) session.createConsumer(testQueue, "JMSType = 'error'");
+
+            consumer = (ActiveMQMessageConsumer) session.createConsumer(testQueue, "JMSType = '" + messageType + "'");
             consumer.setMessageListener(new MessageListerForServer());
 
         } catch (JMSException e) {

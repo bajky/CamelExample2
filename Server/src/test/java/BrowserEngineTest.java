@@ -3,8 +3,7 @@ import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import server.engineimplementation.MessageBrowserEngine;
-import server.engineimplementation.MessageCounterImplementation;
+import server.engineimplementation.MessageBrowser;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -26,7 +25,7 @@ public class BrowserEngineTest {
     private Logger logger = Logger.getLogger(BrowserEngineTest.class);
     @BeforeClass
     public static void createConnection() throws Exception {
-        server = new Server(MESSAGE_BROKER_URL);
+        server = new Server(MESSAGE_BROKER_URL, "error");
     }
 
     @AfterClass
@@ -34,27 +33,6 @@ public class BrowserEngineTest {
         server.stopConnection();
     }
 
-
-    @Test
-    public void messagewasDequeuedTest() {
-        Client client = new Client(MESSAGE_BROKER_URL);
-        MessageCounterImplementation messageCounterImplementation = new MessageCounterImplementation(MESSAGE_BROKER_URL, Server.CLIENT_QUEUE_NAME);
-
-        client.sendMessage("test message", "error");
-
-
-        boolean b = messageCounterImplementation.messageWasDequeued(Server.CLIENT_QUEUE_NAME, Server.DLQ, "test message");
-        try {
-            System.err.println(client.getTextMessage().getJMSType());
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-        assertTrue(b);
-        messageCounterImplementation.closeConnections();
-
-        client.stopConnection();
-
-    }
 
     @Test
     public void getMessageByTextTest() throws JMSException {
@@ -68,37 +46,37 @@ public class BrowserEngineTest {
         messages.add(message1);
         messages.add(message2);
 
-        MessageBrowserEngine messageBrowserEngine = new MessageBrowserEngine(MESSAGE_BROKER_URL);
-        TextMessage result = (TextMessage) messageBrowserEngine.getMessageByText(messages, correctMessage);
+        MessageBrowser messageBrowser = new MessageBrowser(MESSAGE_BROKER_URL);
+        TextMessage result = (TextMessage) messageBrowser.getMessageByText(messages, correctMessage);
 
         assertEquals(correctMessage, result.getText());
 
-        messageBrowserEngine.closeConnection();
+        messageBrowser.closeConnection();
     }
 
     @Test
     public void getQueueByNameTest() throws JMSException {
 
 
-        MessageBrowserEngine messageBrowserEngine = new MessageBrowserEngine(MESSAGE_BROKER_URL);
-        ActiveMQQueue resultQueue = messageBrowserEngine.getQueueByname(Server.CLIENT_QUEUE_NAME);
+        MessageBrowser messageBrowser = new MessageBrowser(MESSAGE_BROKER_URL);
+        ActiveMQQueue resultQueue = messageBrowser.getQueueByname(Server.CLIENT_QUEUE_NAME);
 
         assertEquals(Server.CLIENT_QUEUE_NAME, resultQueue.getQueueName());
-        messageBrowserEngine.closeConnection();
+        messageBrowser.closeConnection();
     }
 
     @Test
     public void isMessageOnQueueTest() throws JMSException, InterruptedException {
         Client client = new Client(MESSAGE_BROKER_URL);
 
-        MessageBrowserEngine messageBrowserEngine = new MessageBrowserEngine(MESSAGE_BROKER_URL);
-        client.sendMessage("asdasd", "error");
+        MessageBrowser messageBrowser = new MessageBrowser(MESSAGE_BROKER_URL);
+        client.sendMessage("message", "error");
 
         TimeUnit.SECONDS.sleep(2);
-        System.err.println("error z testu " + server.getRecievedMessageID());
-        assertTrue(messageBrowserEngine.isMessageOnQueue(server.getRecievedMessageID(), Server.CLIENT_QUEUE_NAME));
+        logger.debug("error z testu " + server.getRecievedMessageID());
+        assertTrue(messageBrowser.isMessageOnQueue(server.getRecievedMessageID(), Server.CLIENT_QUEUE_NAME));
 
-        messageBrowserEngine.closeConnection();
+        messageBrowser.closeConnection();
 
         client.stopConnection();
     }

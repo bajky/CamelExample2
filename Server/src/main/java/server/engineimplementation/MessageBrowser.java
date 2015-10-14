@@ -15,12 +15,12 @@ import java.util.Set;
 /**
  * @author David david.bajko@senacor.com
  */
-public class MessageBrowserEngine extends ConnectableComponent {
+public class MessageBrowser extends ConnectableComponent {
 
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    public MessageBrowserEngine(String aciveMQURL) {
+    public MessageBrowser(String aciveMQURL) {
         super(aciveMQURL);
     }
 
