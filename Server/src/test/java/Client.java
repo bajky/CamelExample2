@@ -11,7 +11,6 @@ import java.util.Set;
 public class Client {
 
     private static final int ACK_MODE = Session.AUTO_ACKNOWLEDGE;
-    private static final String CLIENT_QUEUE_NAME = "server.receiver";
 
     private Logger logger = Logger.getLogger(Client.class);
     private Connection connection;
@@ -70,33 +69,5 @@ public class Client {
 
     }
 
-    public void sendMessage(TextMessage txtMessage) {
-        try {
-            producer.send(txtMessage);
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendMessages(Set<Message> messageSet) {
-        Iterator<Message> messageIterator = messageSet.iterator();
-        try {
-            while (messageIterator.hasNext()) {
-
-                producer.send(messageIterator.next());
-            }
-
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public TextMessage getTextMessage(){
-        if(message instanceof TextMessage){
-            return message;
-        }
-
-        return null;
-    }
 
 }

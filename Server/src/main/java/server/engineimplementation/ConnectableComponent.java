@@ -20,7 +20,7 @@ public abstract class ConnectableComponent {
     private ActiveMQConnection activeMQConnection;
     private ActiveMQSession activeMQSession;
 
-    protected ConnectableComponent(String activeMQUrl){
+    protected ConnectableComponent(String activeMQUrl) {
         this.activeMQURL = activeMQUrl;
         createConnection();
     }
@@ -39,6 +39,7 @@ public abstract class ConnectableComponent {
             jmsException.printStackTrace();
         }
     }
+
     public void closeConnection() {
         try {
             activeMQSession.close();

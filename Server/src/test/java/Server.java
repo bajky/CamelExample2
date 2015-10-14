@@ -46,7 +46,7 @@ public class Server {
 
     private void createConnection() {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(acttiveMQURL);
-
+        activeMQConnectionFactory.setDispatchAsync(false);
         try {
             connection = activeMQConnectionFactory.createConnection();
             connection.start();
@@ -87,7 +87,6 @@ public class Server {
 
         public void onMessage(Message message) {
             try {
-                System.err.println("posielam do DLQ" + message);
                 messageID = message.getJMSMessageID();
             } catch (JMSException e) {
                 e.printStackTrace();
@@ -103,15 +102,4 @@ public class Server {
         return messageID;
     }
 
-    public void setMessageListener(MessageListener listener) {
-        try {
-            consumer.setMessageListener(listener);
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public ActiveMQMessageProducer getMessageProducer() {
-        return messageProducer;
-    }
 }

@@ -14,7 +14,7 @@ public class IncommingMessagesListenerTest {
 //    <plugins>
 //    <statisticsBrokerPlugin/>
 //    </plugins>
-    private static final String ACTIVEMQ_URL = "tcp://localhost:61616";
+    private static final String ACTIVEMQ_URL = "tcp://localhost:61616?concurrentConsumers=10&useAsyncSend=true";
     @Test
     public void getMessageCountOnQueue() {
         MessageBrowser messageCounter = new MessageBrowser(ACTIVEMQ_URL);

@@ -19,15 +19,14 @@ public class QueueMessageListener extends ConnectableComponent{
     private final String queueName;
 
     private ActiveMQMessageConsumer acctiveMQConsumer;
-
-    protected MessageBrowser messageBrowser;
+    private String activeMQUrl;
 
     private Set<Message> messageList;
 
     public QueueMessageListener(String activeMQurl, String queueName) {
         super(activeMQurl);
-        this.messageBrowser = new MessageBrowser(activeMQurl);
-        this.queueName = queueName;
+        this.activeMQUrl = activeMQurl;
+        this.queueName = queueName ;
         this.messageList = new HashSet<Message>();
         setMessageListener();
     }
@@ -38,7 +37,6 @@ public class QueueMessageListener extends ConnectableComponent{
         try {
             super.closeConnection();
             acctiveMQConsumer.close();
-            messageBrowser.closeConnection();
         } catch (JMSException e) {
             logger.debug("exception in " + this.getClass().getName());
             e.printStackTrace();
@@ -49,7 +47,7 @@ public class QueueMessageListener extends ConnectableComponent{
     //set Listener of the consumer
     private void setMessageListener() {
         try {
-            ActiveMQQueue activeMQQueue = messageBrowser.getQueueByname(queueName);
+            ActiveMQQueue activeMQQueue = (ActiveMQQueue) getActiveMQSession().createQueue(queueName);
 
             acctiveMQConsumer = (ActiveMQMessageConsumer) getActiveMQSession().createConsumer(activeMQQueue);
             acctiveMQConsumer.setMessageListener(new IncommingMessagesListener());
@@ -64,7 +62,7 @@ public class QueueMessageListener extends ConnectableComponent{
     public Set<Message> getIncommingMessages(long delayInMillis) {
         long timeMillis = System.currentTimeMillis();
 
-        while ((System.currentTimeMillis() - delayInMillis) < timeMillis) ;
+        while ((System.currentTimeMillis() - delayInMillis) < timeMillis && messageList.size()==0) ;
 
         return messageList;
     }
@@ -80,9 +78,7 @@ public class QueueMessageListener extends ConnectableComponent{
         }
     }
 
-    public MessageBrowser getMessageBrowser() {
-        return this.messageBrowser;
-    }
+
 
 
 
