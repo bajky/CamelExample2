@@ -33,6 +33,7 @@ public class Client {
             ActiveMQQueue activeMQQueue = messageBrowser.getQueueByname(Server.CLIENT_QUEUE_NAME);
 
             producer = (ActiveMQMessageProducer) session.createProducer(activeMQQueue);
+            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
         } catch (JMSException e) {
             logger.debug("Exception in " + this.getClass().getName());

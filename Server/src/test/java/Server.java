@@ -32,7 +32,6 @@ public class Server {
 
         broker = new BrokerService();
         broker.setPersistent(false);
-        broker.setUseJmx(false);
 
         try {
             broker.addConnector(activeMQURL);
@@ -51,7 +50,7 @@ public class Server {
             connection = activeMQConnectionFactory.createConnection();
             connection.start();
 
-            session = (ActiveMQSession) connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+            session = (ActiveMQSession) connection.createSession(true, Session.CLIENT_ACKNOWLEDGE);
 
             ActiveMQQueue testQueue = (ActiveMQQueue) session.createQueue(CLIENT_QUEUE_NAME);
             ActiveMQQueue dlqQueue = (ActiveMQQueue) session.createQueue(DLQ);
@@ -87,6 +86,7 @@ public class Server {
 
         public void onMessage(Message message) {
             try {
+                System.err.println(message);
                 messageID = message.getJMSMessageID();
             } catch (JMSException e) {
                 e.printStackTrace();

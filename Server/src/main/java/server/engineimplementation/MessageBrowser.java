@@ -6,11 +6,9 @@ import org.apache.log4j.Logger;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.QueueBrowser;
 import javax.jms.TextMessage;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author David david.bajko@senacor.com
@@ -35,11 +33,11 @@ public class MessageBrowser extends ConnectableComponent {
     }
 
     //detect whether is message on concrete queue
-    public boolean isMessageOnQueue(String messageID,String queueName) {
+    public boolean isMessageOnQueue(String messageID, String queueName) {
         ActiveMQQueue activeMQQueue = getQueueByname(queueName);
 
         try {
-            ActiveMQQueueBrowser browser = (ActiveMQQueueBrowser) getActiveMQSession().createBrowser(activeMQQueue,"JMSMessageID = '" + messageID + "'");
+            ActiveMQQueueBrowser browser = (ActiveMQQueueBrowser) getActiveMQSession().createBrowser(activeMQQueue, "JMSMessageID = '" + messageID + "'");
             Enumeration enumeration = browser.getEnumeration();
 
 
@@ -110,8 +108,6 @@ public class MessageBrowser extends ConnectableComponent {
     }
 
 
-
-
     public Message getMessageByText(Set<Message> messages, String text) {
         Iterator<Message> iterator = messages.iterator();
 
@@ -120,7 +116,7 @@ public class MessageBrowser extends ConnectableComponent {
             try {
                 if (nextMessage instanceof TextMessage) {
                     boolean equals = ((TextMessage) nextMessage).getText().equals(text);
-                    if(equals){
+                    if (equals) {
                         System.err.println(nextMessage);
                         return nextMessage;
                     }
@@ -130,6 +126,19 @@ public class MessageBrowser extends ConnectableComponent {
             }
         }
         return null;
+    }
+
+    public Set<Message> getMessagesOnQueue(String queueName) {
+        ActiveMQQueue queue = getQueueByname(queueName);
+        Enumeration enumeration = null;
+        try {
+            ActiveMQQueueBrowser activeMQBrowser = (ActiveMQQueueBrowser) getActiveMQSession().createBrowser(queue);
+            enumeration = activeMQBrowser.getEnumeration();
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+        return new HashSet<Message>(Collections.list(enumeration));
+
     }
 
 

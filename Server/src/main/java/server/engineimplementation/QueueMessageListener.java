@@ -1,19 +1,19 @@
 package server.engineimplementation;
 
 import org.apache.activemq.ActiveMQMessageConsumer;
+import org.apache.activemq.ActiveMQQueueReceiver;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.log4j.Logger;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
+import javax.jms.*;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author David david.bajko@senacor.com
  */
-public class QueueMessageListener extends ConnectableComponent{
+public class QueueMessageListener extends ConnectableComponent {
+
 
     private final Logger logger = Logger.getLogger(QueueMessageListener.class);
     private final String queueName;
@@ -28,7 +28,7 @@ public class QueueMessageListener extends ConnectableComponent{
         this.activeMQUrl = activeMQurl;
         this.queueName = queueName ;
         this.messageList = new HashSet<Message>();
-        setMessageListener();
+        setMessageConsumer();
     }
 
     //close connection and session
@@ -45,14 +45,13 @@ public class QueueMessageListener extends ConnectableComponent{
 
 
     //set Listener of the consumer
-    private void setMessageListener() {
+    private void setMessageConsumer() {
         try {
-            ActiveMQQueue activeMQQueue = (ActiveMQQueue) getActiveMQSession().createQueue(queueName);
+            getActiveMQConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+            ActiveMQQueue activeMQQueue = new MessageBrowser(activeMQUrl).getQueueByname(queueName);
+            acctiveMQConsumer = (ActiveMQMessageConsumer) getActiveMQSession().createConsumer(activeMQQueue, "JMSType = 'error'");
 
-            acctiveMQConsumer = (ActiveMQMessageConsumer) getActiveMQSession().createConsumer(activeMQQueue);
             acctiveMQConsumer.setMessageListener(new IncommingMessagesListener());
-
-
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -67,18 +66,17 @@ public class QueueMessageListener extends ConnectableComponent{
         return messageList;
     }
 
+
     //listener for messageList
     private class IncommingMessagesListener implements MessageListener {
 
         public void onMessage(Message message) {
 
             messageList.add(message);
-            System.err.println("from Listener" + message);
+            System.err.println(message);
 
         }
     }
-
-
 
 
 

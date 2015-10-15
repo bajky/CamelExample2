@@ -2,6 +2,7 @@ package server.engineimplementation;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.log4j.Logger;
 
@@ -27,6 +28,7 @@ public abstract class ConnectableComponent {
 
     private void createConnection() {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(activeMQURL);
+
         try {
 
             activeMQConnection = (ActiveMQConnection) activeMQConnectionFactory.createConnection();
